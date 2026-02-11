@@ -2,33 +2,63 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Tonalamatl</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; text-align: center; background: #fdf5e6; }
-        #resultado { font-size: 1.5rem; margin-top: 20px; color: #8b4513; }
-        .glifo { width: 150px; height: 150px; margin: 20px auto; border: 2px solid #8b4513; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #fff; }
+        body { font-family: 'Georgia', serif; text-align: center; background: #f4ece1; color: #3d2b1f; padding: 20px; }
+        .card { background: #fffdfa; border: 2px dashed #8b4513; padding: 20px; border-radius: 15px; max-width: 400px; margin: 0 auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1 { color: #a04000; font-size: 1.5rem; }
+        .tonal { font-size: 2rem; font-weight: bold; color: #d35400; margin: 10px 0; }
+        .info { text-align: left; margin-top: 20px; line-height: 1.6; }
+        button { background: #8b4513; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <h1>Calculadora Tonalpohualli</h1>
-    <p>Haz clic para conocer el signo de hoy:</p>
-    <button onclick="calcularHoy()">Calcular Tonal</button>
-    
-    <div id="resultado"></div>
 
-    <script>
-        function calcularHoy() {
-            const signos = ["Cipactli", "Ehecatl", "Calli", "Cuetzpalin", "Coatl", "Miquiztli", "Mazatl", "Tochtli", "Atl", "Itzcuintli", "Ozomatli", "Malinalli", "Acatl", "Ocelotl", "Cuauhtli", "Cozcacuauhtli", "Olin", "Tecpatl", "Quiahuitl", "Xochitl"];
-            
-            // Lógica simplificada: 11 de febrero de 2026
-            // En una versión avanzada usaremos correlaciones exactas (Caso, etc.)
-            let hoy = new Date();
-            let indice = hoy.getDate() % 20; // Esto es solo un ejemplo visual rápido
-            
-            document.getElementById('resultado').innerHTML = 
-                "Hoy es día: <strong>" + signos[indice] + "</strong><br>" +
-                "<small>Según la correlación base</small>";
-        }
-    </script>
+<div class="card">
+    <h1>Cómputo del Tiempo</h1>
+    <div id="pantalla">
+        <button onclick="calcular()">Consultar el día de hoy</button>
+    </div>
+</div>
+
+<script>
+function calcular() {
+    const signos = ["Cipactli", "Ehecatl", "Calli", "Cuetzpalin", "Coatl", "Miquiztli", "Mazatl", "Tochtli", "Atl", "Itzcuintli", "Ozomatli", "Malinalli", "Acatl", "Ocelotl", "Cuauhtli", "Cozcacuauhtli", "Olin", "Tecpatl", "Quiahuitl", "Xochitl"];
+    
+    // Fecha de referencia: 13 de agosto de 1521 (Julian) = 1 Coatl
+    // En milisegundos para precisión
+    const fechaRef = new Date('1521-08-23T00:00:00Z'); // Ajuste a gregoriano
+    const hoy = new Date();
+    
+    // Diferencia de días
+    const difMs = hoy - fechaRef;
+    const difDias = Math.floor(difMs / (1000 * 60 * 60 * 24));
+
+    // Cálculos del Tonalpohualli (Ciclo de 260)
+    // El 13 de agosto de 1521 era signo 4 (Coatl) y numeral 1
+    let numTonal = ((difDias + 0) % 13) + 1; 
+    if (numTonal <= 0) numTonal += 13;
+    
+    let signoIndex = (difDias + 4) % 20;
+    if (signoIndex < 0) signoIndex += 20;
+
+    // Cálculo de la Trecena (el numeral 1 más reciente)
+    let trecenaIndex = (signoIndex - (numTonal - 1));
+    if (trecenaIndex < 0) trecenaIndex += 20;
+
+    document.getElementById('pantalla').innerHTML = `
+        <div class="tonal">${numTonal} ${signos[signoIndex]}</div>
+        <div class="info">
+            <p><strong>Trecena:</strong> Inicia en 1 ${signos[trecenaIndex]}</p>
+            <p><strong>Año actual:</strong> (Próximamente cálculo de Xiuhpohualli)</p>
+            <hr>
+            <p><em>"En este día los antiguos decían que..."</em></p>
+            <p id="fuente">Cargando datos del Códice Florentino...</p>
+        </div>
+        <button onclick="location.reload()">Volver</button>
+    `;
+}
+</script>
 </body>
 </html>
