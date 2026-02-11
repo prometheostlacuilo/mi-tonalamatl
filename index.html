@@ -7,10 +7,11 @@
     <style>
         body { font-family: 'Georgia', serif; text-align: center; background: #f4ece1; color: #3d2b1f; padding: 20px; }
         .card { background: #fffdfa; border: 2px dashed #8b4513; padding: 20px; border-radius: 15px; max-width: 400px; margin: 0 auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h1 { color: #a04000; font-size: 1.5rem; }
-        .tonal { font-size: 2rem; font-weight: bold; color: #d35400; margin: 10px 0; }
-        .info { text-align: left; margin-top: 20px; line-height: 1.6; }
-        button { background: #8b4513; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        h1 { color: #a04000; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; }
+        .tonal { font-size: 2.2rem; font-weight: bold; color: #d35400; margin: 10px 0; border-bottom: 1px solid #e2d1b4; padding-bottom: 10px; }
+        .info { text-align: left; margin-top: 15px; font-size: 0.95rem; }
+        .fuente-box { background: #fdf5e6; padding: 15px; border-left: 4px solid #8b4513; font-style: italic; margin-top: 15px; }
+        button { background: #8b4513; color: white; border: none; padding: 12px 25px; border-radius: 5px; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -26,37 +27,49 @@
 function calcular() {
     const signos = ["Cipactli", "Ehecatl", "Calli", "Cuetzpalin", "Coatl", "Miquiztli", "Mazatl", "Tochtli", "Atl", "Itzcuintli", "Ozomatli", "Malinalli", "Acatl", "Ocelotl", "Cuauhtli", "Cozcacuauhtli", "Olin", "Tecpatl", "Quiahuitl", "Xochitl"];
     
-    // Fecha de referencia: 13 de agosto de 1521 (Julian) = 1 Coatl
-    // En milisegundos para precisión
-    const fechaRef = new Date('1521-08-23T00:00:00Z'); // Ajuste a gregoriano
+    const augurios = {
+        "Xochitl": "Los nacidos aquí eran grandes artistas, pintores y artesanos. Se decía que eran de corazón alegre, aunque debían evitar la autocomplacencia.",
+        "Cipactli": "Día de inicio y fundamento. Se decía que el nacido aquí sería trabajador y acumularía bienes con esfuerzo.",
+        "Acatl": "Signo de autoridad y justicia. Asociado con los gobernantes y la sabiduría de los ancestros."
+        // Añadiremos más textos conforme avancemos
+    };
+
+    const fechaRef = new Date('1521-08-23T00:00:00Z'); 
     const hoy = new Date();
-    
-    // Diferencia de días
     const difMs = hoy - fechaRef;
     const difDias = Math.floor(difMs / (1000 * 60 * 60 * 24));
 
-    // Cálculos del Tonalpohualli (Ciclo de 260)
-    // El 13 de agosto de 1521 era signo 4 (Coatl) y numeral 1
+    // TONALPOHUALLI
     let numTonal = ((difDias + 0) % 13) + 1; 
-    if (numTonal <= 0) numTonal += 13;
-    
     let signoIndex = (difDias + 4) % 20;
     if (signoIndex < 0) signoIndex += 20;
 
-    // Cálculo de la Trecena (el numeral 1 más reciente)
+    // XIUHPOHUALLI (Año)
+    // El año 1521 fue un año 3 Calli.
+    const añosSignos = ["Tochtli", "Acatl", "Tecpatl", "Calli"];
+    let añoBase = 1521;
+    let añoActual = hoy.getFullYear();
+    let difAños = añoActual - añoBase;
+    
+    let numAño = ((difAños + 2) % 13) + 1; // 1521 era 3
+    let signoAño = añosSignos[(difAños + 3) % 4]; // 1521 era Calli (índice 3)
+
     let trecenaIndex = (signoIndex - (numTonal - 1));
     if (trecenaIndex < 0) trecenaIndex += 20;
+
+    const pronostico = augurios[signos[signoIndex]] || "Día de gran fuerza espiritual según los antiguos maestros.";
 
     document.getElementById('pantalla').innerHTML = `
         <div class="tonal">${numTonal} ${signos[signoIndex]}</div>
         <div class="info">
-            <p><strong>Trecena:</strong> Inicia en 1 ${signos[trecenaIndex]}</p>
-            <p><strong>Año actual:</strong> (Próximamente cálculo de Xiuhpohualli)</p>
-            <hr>
-            <p><em>"En este día los antiguos decían que..."</em></p>
-            <p id="fuente">Cargando datos del Códice Florentino...</p>
+            <p><strong>Año:</strong> ${numAño} ${signoAño}</p>
+            <p><strong>Trecena:</strong> 1 ${signos[trecenaIndex]}</p>
+            <div class="fuente-box">
+                <strong>Del Códice Florentino:</strong><br>
+                "${pronostico}"
+            </div>
         </div>
-        <button onclick="location.reload()">Volver</button>
+        <button onclick="location.reload()">Regresar</button>
     `;
 }
 </script>
