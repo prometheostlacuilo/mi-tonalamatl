@@ -3,23 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Tonalamatl</title>
+    <title>Tonalamatl Digital</title>
     <style>
         body { font-family: 'Georgia', serif; text-align: center; background: #f4ece1; color: #3d2b1f; padding: 20px; }
-        .card { background: #fffdfa; border: 2px dashed #8b4513; padding: 20px; border-radius: 15px; max-width: 400px; margin: 0 auto; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        h1 { color: #a04000; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; }
-        .tonal { font-size: 2.2rem; font-weight: bold; color: #d35400; margin: 10px 0; border-bottom: 1px solid #e2d1b4; padding-bottom: 10px; }
-        .info { text-align: left; margin-top: 15px; font-size: 0.95rem; }
-        .fuente-box { background: #fdf5e6; padding: 15px; border-left: 4px solid #8b4513; font-style: italic; margin-top: 15px; }
-        button { background: #8b4513; color: white; border: none; padding: 12px 25px; border-radius: 5px; font-weight: bold; margin-top: 10px; }
+        .card { background: #fffdfa; border: 2px dashed #8b4513; padding: 20px; border-radius: 15px; max-width: 400px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .glifo-placeholder { font-size: 4rem; margin: 10px 0; }
+        h1 { color: #a04000; font-size: 1.2rem; text-transform: uppercase; border-bottom: 2px solid #8b4513; display: inline-block; padding-bottom: 5px; }
+        .tonal { font-size: 2.5rem; font-weight: bold; color: #d35400; margin: 5px 0; }
+        .info { text-align: left; margin-top: 15px; background: rgba(139, 69, 19, 0.05); padding: 15px; border-radius: 10px; }
+        .fuente-box { margin-top: 15px; padding-top: 15px; border-top: 1px double #8b4513; font-style: italic; }
+        button { background: #8b4513; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h1>Cómputo del Tiempo</h1>
     <div id="pantalla">
-        <button onclick="calcular()">Consultar el día de hoy</button>
+        <h1>Tonalamatl</h1>
+        <p>Presiona para realizar el cómputo</p>
+        <button onclick="calcular()">Consultar Hoy</button>
     </div>
 </div>
 
@@ -27,11 +29,30 @@
 function calcular() {
     const signos = ["Cipactli", "Ehecatl", "Calli", "Cuetzpalin", "Coatl", "Miquiztli", "Mazatl", "Tochtli", "Atl", "Itzcuintli", "Ozomatli", "Malinalli", "Acatl", "Ocelotl", "Cuauhtli", "Cozcacuauhtli", "Olin", "Tecpatl", "Quiahuitl", "Xochitl"];
     
+    // Iconos temporales (mientras subimos tus glifos)
+    const iconos = ["🐊", "🌬️", "🏠", "🦎", "🐍", "💀", "🦌", "🐇", "💧", "🐕", "🐒", "🌿", "🏹", "🐆", "🦅", "🦉", "🌀", "🔪", "🌧️", "🌸"];
+
     const augurios = {
-        "Xochitl": "Los nacidos aquí eran grandes artistas, pintores y artesanos. Se decía que eran de corazón alegre, aunque debían evitar la autocomplacencia.",
-        "Cipactli": "Día de inicio y fundamento. Se decía que el nacido aquí sería trabajador y acumularía bienes con esfuerzo.",
-        "Acatl": "Signo de autoridad y justicia. Asociado con los gobernantes y la sabiduría de los ancestros."
-        // Añadiremos más textos conforme avancemos
+        "Cipactli": "Principio y orden. Los nacidos aquí son diligentes y creadores.",
+        "Ehecatl": "Aliento de vida. Personas de gran intelecto pero espíritu cambiante.",
+        "Calli": "Protección y familia. Inclinados al descanso y la vida interna.",
+        "Cuetzpalin": "Fuerza y salud. Se decía que nada les causaba daño físico.",
+        "Coatl": "Sabiduría y energía. Personas que logran fama y reconocimiento.",
+        "Miquiztli": "Transformación. Inclinados a lo espiritual y la reflexión profunda.",
+        "Mazatl": "Agilidad y timidez. Amantes de la libertad y la naturaleza.",
+        "Tochtli": "Abundancia. Siempre tendrán lo necesario para vivir, si son trabajadores.",
+        "Atl": "Emoción y purificación. Carácter fuerte, como la corriente de un río.",
+        "Itzcuintli": "Lealtad. Protectores naturales de su hogar y sus amigos.",
+        "Ozomatli": "Alegría y artes. Nacidos para el canto, el baile y la celebración.",
+        "Malinalli": "Resistencia. Capaces de florecer incluso en la adversidad.",
+        "Acatl": "Justicia y autoridad. Portadores de la palabra y el mando.",
+        "Ocelotl": "Valentía. Guerreros por naturaleza, de espíritu fiero.",
+        "Cuauhtli": "Visión clara. Capaces de ver lo que otros ignoran.",
+        "Cozcacuauhtli": "Longevidad y consejo. Poseen la sabiduría de los años.",
+        "Olin": "Movimiento y cambio. Su destino es estar en constante evolución.",
+        "Tecpatl": "Claridad y sacrificio. Mente aguda como el pedernal.",
+        "Quiahuitl": "Bendición y refugio. Personas que traen bienestar a otros.",
+        "Xochitl": "Belleza y arte. Los antiguos decían que florecerían en todas las artes."
     };
 
     const fechaRef = new Date('1521-08-23T00:00:00Z'); 
@@ -41,34 +62,31 @@ function calcular() {
 
     // TONALPOHUALLI
     let numTonal = ((difDias + 0) % 13) + 1; 
-    let signoIndex = (difDias + 4) % 20;
-    if (signoIndex < 0) signoIndex += 20;
+    let signoIdx = (difDias + 4) % 20;
 
-    // XIUHPOHUALLI (Año)
-    // El año 1521 fue un año 3 Calli.
+    // XIUHPOHUALLI (Año) - Ajuste a 4 Tochtli para 2026
     const añosSignos = ["Tochtli", "Acatl", "Tecpatl", "Calli"];
-    let añoBase = 1521;
     let añoActual = hoy.getFullYear();
-    let difAños = añoActual - añoBase;
-    
-    let numAño = ((difAños + 2) % 13) + 1; // 1521 era 3
-    let signoAño = añosSignos[(difAños + 3) % 4]; // 1521 era Calli (índice 3)
+    let numAño = ((añoActual - 2022) % 13) + 1; 
+    let signoAño = añosSignos[(añoActual - 2022) % 4];
 
-    let trecenaIndex = (signoIndex - (numTonal - 1));
-    if (trecenaIndex < 0) trecenaIndex += 20;
-
-    const pronostico = augurios[signos[signoIndex]] || "Día de gran fuerza espiritual según los antiguos maestros.";
+    // TRECENA
+    let trecenaIdx = (signoIdx - (numTonal - 1));
+    while (trecenaIdx < 0) trecenaIdx += 20;
 
     document.getElementById('pantalla').innerHTML = `
-        <div class="tonal">${numTonal} ${signos[signoIndex]}</div>
+        <h1>Cómputo del Tiempo</h1>
+        <div class="glifo-placeholder">${iconos[signoIdx]}</div>
+        <div class="tonal">${numTonal} ${signos[signoIdx]}</div>
         <div class="info">
             <p><strong>Año:</strong> ${numAño} ${signoAño}</p>
-            <p><strong>Trecena:</strong> 1 ${signos[trecenaIndex]}</p>
+            <p><strong>Trecena:</strong> 1 ${signos[trecenaIdx]}</p>
             <div class="fuente-box">
-                <strong>Del Códice Florentino:</strong><br>
-                "${pronostico}"
+                <strong>Augurio del Nacido:</strong><br>
+                "${augurios[signos[signoIdx]]}"
             </div>
         </div>
+        <br>
         <button onclick="location.reload()">Regresar</button>
     `;
 }
