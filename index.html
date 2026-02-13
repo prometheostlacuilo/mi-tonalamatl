@@ -3,91 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tonalamatl Digital</title>
+    <title>Tonalamatl - Engranes del Tiempo</title>
     <style>
-        body { font-family: 'Georgia', serif; text-align: center; background: #f4ece1; color: #3d2b1f; padding: 20px; }
-        .card { background: #fffdfa; border: 2px dashed #8b4513; padding: 20px; border-radius: 15px; max-width: 400px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .glifo-placeholder { font-size: 5rem; margin: 10px 0; display: block; }
-        h1 { color: #a04000; font-size: 1.2rem; text-transform: uppercase; border-bottom: 2px solid #8b4513; display: inline-block; padding-bottom: 5px; margin-bottom: 15px; }
-        .tonal { font-size: 2.5rem; font-weight: bold; color: #d35400; margin: 5px 0; }
-        .info { text-align: left; margin-top: 15px; background: rgba(139, 69, 19, 0.05); padding: 15px; border-radius: 10px; border: 1px solid #e2d1b4; }
-        .fuente-box { margin-top: 15px; padding-top: 15px; border-top: 1px double #8b4513; font-style: italic; }
-        button { background: #8b4513; color: white; border: none; padding: 15px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; font-size: 1rem; margin-top: 10px; }
+        body { font-family: 'Georgia', serif; text-align: center; background: #f4ece1; color: #3d2b1f; padding: 10px; }
+        .card { background: #fffdfa; border: 2px dashed #8b4513; padding: 15px; border-radius: 15px; max-width: 500px; margin: 0 auto; overflow: hidden; }
+        
+        /* Contenedor de los engranes */
+        .ruedas-container { position: relative; height: 220px; margin: 20px 0; display: flex; justify-content: center; align-items: center; }
+        
+        .rueda { border: 2px solid #8b4513; border-radius: 50%; position: absolute; transition: transform 2s cubic-bezier(0.45, 0.05, 0.55, 0.95); display: flex; align-items: center; justify-content: center; background: white; }
+        
+        /* Engrane de 20 Signos (Grande) */
+        .rueda-glifos { width: 280px; height: 280px; right: -80px; z-index: 1; border-style: double; border-width: 4px; }
+        
+        /* Engrane de 13 Numerales (Pequeño) */
+        .rueda-numerales { width: 150px; height: 150px; left: -20px; z-index: 2; border-style: solid; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+
+        .indicador { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border: 3px solid #d35400; z-index: 10; border-radius: 5px; pointer-events: none; }
+
+        .tonal-display { font-size: 1.8rem; font-weight: bold; color: #d35400; margin: 10px 0; }
+        .info-panel { background: rgba(139, 69, 19, 0.05); padding: 15px; border-radius: 10px; text-align: left; }
+        button { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 8px; width: 100%; font-weight: bold; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
 <div class="card">
+    <h1>Cómputo del Tiempo</h1>
+    
+    <div id="mecanismo" class="ruedas-container" style="display:none;">
+        <div id="r-num" class="rueda rueda-numerales"></div>
+        <div id="r-sig" class="rueda rueda-glifos"></div>
+        <div class="indicador"></div>
+    </div>
+
     <div id="pantalla">
-        <h1>Tonalamatl</h1>
-        <p>Presiona para realizar el cómputo</p>
-        <button onclick="calcular()">Consultar Hoy</button>
+        <button onclick="iniciarMecanismo()">Calcular Día de Hoy</button>
     </div>
 </div>
 
 <script>
-function calcular() {
-    const signos = ["Cipactli", "Ehecatl", "Calli", "Cuetzpalin", "Coatl", "Miquiztli", "Mazatl", "Tochtli", "Atl", "Itzcuintli", "Ozomatli", "Malinalli", "Acatl", "Ocelotl", "Cuauhtli", "Cozcacuauhtli", "Olin", "Tecpatl", "Quiahuitl", "Xochitl"];
-    const iconos = ["🐊", "🌬️", "🏠", "🦎", "🐍", "💀", "🦌", "🐇", "💧", "🐕", "🐒", "🌿", "🏹", "🐆", "🦅", "🦉", "🌀", "🔪", "🌧️", "🌸"];
+const signos = ["Cipactli", "Ehecatl", "Calli", "Cuetzpalin", "Coatl", "Miquiztli", "Mazatl", "Tochtli", "Atl", "Itzcuintli", "Ozomatli", "Malinalli", "Acatl", "Ocelotl", "Cuauhtli", "Cozcacuauhtli", "Olin", "Tecpatl", "Quiahuitl", "Xochitl"];
+const iconos = ["🐊", "🌬️", "🏠", "🦎", "🐍", "💀", "🦌", "🐇", "💧", "🐕", "🐒", "🌿", "🏹", "🐆", "🦅", "🦉", "🌀", "🔪", "🌧️", "🌸"];
 
-    const augurios = {
-        "Cipactli": "Principio y orden. Los nacidos aquí son diligentes y creadores.",
-        "Ehecatl": "Aliento de vida. Personas de gran intelecto pero espíritu cambiante.",
-        "Calli": "Protección y familia. Inclinados al descanso y la vida interna.",
-        "Cuetzpalin": "Fuerza y salud. Se decía que nada les causaba daño físico.",
-        "Coatl": "Sabiduría y energía. Personas que logran fama y reconocimiento.",
-        "Miquiztli": "Transformación. Inclinados a lo espiritual y la reflexión profunda.",
-        "Mazatl": "Agilidad y timidez. Amantes de la libertad y la naturaleza.",
-        "Tochtli": "Abundancia. Siempre tendrán lo necesario para vivir, si son trabajadores.",
-        "Atl": "Emoción y purificación. Carácter fuerte, como la corriente de un río.",
-        "Itzcuintli": "Lealtad. Protectores naturales de su hogar y sus amigos.",
-        "Ozomatli": "Alegría y artes. Nacidos para el canto, el baile y la celebración.",
-        "Malinalli": "Resistencia. Capaces de florecer incluso en la adversidad.",
-        "Acatl": "Justicia y autoridad. Portadores de la palabra y el mando.",
-        "Ocelotl": "Valentía. Guerreros por naturaleza, de espíritu fiero.",
-        "Cuauhtli": "Visión clara. Capaces de ver lo que otros ignoran.",
-        "Cozcacuauhtli": "Longevidad y consejo. Poseen la sabiduría de los años.",
-        "Olin": "Movimiento y cambio. Su destino es estar en constante evolución.",
-        "Tecpatl": "Claridad y sacrificio. Mente aguda como el pedernal.",
-        "Quiahuitl": "Bendición y refugio. Personas que traen bienestar a otros.",
-        "Xochitl": "Belleza y arte. Los antiguos decían que florecerían en todas las artes."
-    };
-
-    const fechaRef = new Date('1521-08-23T00:00:00Z'); 
+function iniciarMecanismo() {
+    document.getElementById('mecanismo').style.display = 'flex';
+    
     const hoy = new Date();
-    const difMs = hoy - fechaRef;
-    const difDias = Math.floor(difMs / (1000 * 60 * 60 * 24));
+    const fechaRef = new Date('1521-08-23T00:00:00Z'); 
+    const difDias = Math.floor((hoy - fechaRef) / (1000 * 60 * 60 * 24));
 
-    // TONALPOHUALLI
+    // Cálculos
     let numTonal = ((difDias + 0) % 13) + 1; 
     let signoIdx = (difDias + 4) % 20;
     if (signoIdx < 0) signoIdx += 20;
 
-    // XIUHPOHUALLI (Ajustado para que 2026 sea 1 Tochtli)
+    // Rotaciones: multiplicamos el índice por los grados de cada diente
+    let rotNum = - (numTonal - 1) * (360 / 13);
+    let rotSig = - (signoIdx) * (360 / 20);
+
+    // Aplicar giro
+    document.getElementById('r-num').style.transform = `rotate(${rotNum}deg)`;
+    document.getElementById('r-sig').style.transform = `rotate(${rotSig}deg)`;
+
+    // Mostrar resultado después de la animación
+    setTimeout(() => {
+        mostrarResultado(numTonal, signos[signoIdx], signoIdx, hoy);
+    }, 2100);
+}
+
+function mostrarResultado(num, nombre, idx, hoy) {
     const añosSignos = ["Tochtli", "Acatl", "Tecpatl", "Calli"];
     let añoActual = hoy.getFullYear();
-    let numAño = ((añoActual - 2026) % 13) + 1; // 2026 = 1
+    let numAño = ((añoActual - 2026) % 13) + 1; 
     if (numAño <= 0) numAño += 13;
     let signoAño = añosSignos[(añoActual - 2026) % 4];
-    if ((añoActual - 2026) % 4 < 0) signoAño = añosSignos[4 + ((añoActual - 2026) % 4)];
-
-    // TRECENA
-    let trecenaIdx = (signoIdx - (numTonal - 1));
-    while (trecenaIdx < 0) trecenaIdx += 20;
 
     document.getElementById('pantalla').innerHTML = `
-        <h1>Cómputo del Tiempo</h1>
-        <div class="glifo-placeholder">${iconos[signoIdx]}</div>
-        <div class="tonal">${numTonal} ${signos[signoIdx]}</div>
-        <div class="info">
+        <div class="tonal-display">${iconos[idx]} ${num} ${nombre}</div>
+        <div class="info-panel">
             <p><strong>Año:</strong> ${numAño} ${signoAño}</p>
-            <p><strong>Trecena:</strong> 1 ${signos[trecenaIdx]}</p>
-            <div class="fuente-box">
-                <strong>Augurio del Nacido:</strong><br>
-                "${augurios[signos[signoIdx]]}"
-            </div>
+            <p><strong>Estado del tiempo:</strong> Los engranes se han alineado.</p>
         </div>
-        <button onclick="location.reload()">Regresar</button>
+        <br>
+        <button onclick="location.reload()">Reiniciar Cuenta</button>
     `;
 }
 </script>
