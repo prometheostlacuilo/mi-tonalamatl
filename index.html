@@ -3,114 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tonalamatl - Mecanismo</title>
+    <title>Tonalamatl - Mecanismo del Tiempo</title>
     <style>
-        body { font-family: 'Georgia', serif; text-align: center; background: #f4ece1; color: #3d2b1f; padding: 10px; margin: 0; }
-        .card { background: #fffdfa; border: 2px dashed #8b4513; padding: 15px; border-radius: 15px; max-width: 450px; margin: 10px auto; min-height: 90vh; }
-        
-        /* Contenedor del mecanismo */
-        .mecanismo-box { position: relative; height: 300px; margin: 20px 0; overflow: hidden; background: #eee4d3; border-radius: 10px; border: 1px solid #d2b48c; }
-        
-        .rueda { position: absolute; border-radius: 50%; border: 4px solid #8b4513; background: #fff; transition: transform 3s cubic-bezier(0.15, 0, 0.15, 1); }
-        
-        /* Rueda 13 Numerales */
-        #r-num { width: 180px; height: 180px; left: -40px; top: 60px; z-index: 2; }
-        
-        /* Rueda 20 Glifos */
-        #r-sig { width: 320px; height: 320px; right: -90px; top: -10px; z-index: 1; }
-
-        /* Estilo para los elementos dentro de las ruedas */
-        .item { position: absolute; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; }
-
-        /* Cuadro de alineación central */
-        .puntero { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; border: 4px solid #d35400; border-radius: 8px; z-index: 10; pointer-events: none; box-shadow: 0 0 15px rgba(211, 84, 0, 0.3); }
-
-        .info-panel { margin-top: 10px; text-align: left; background: white; padding: 15px; border-radius: 10px; border: 1px solid #e2d1b4; }
-        .tonal-nombre { font-size: 1.8rem; color: #d35400; text-align: center; font-weight: bold; margin-bottom: 10px; }
-        button { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; }
+        body { font-family: 'Georgia', serif; text-align: center; background: #f4ece1; color: #3d2b1f; margin: 0; padding: 10px; }
+        .card { background: #fffdfa; border: 2px dashed #8b4513; padding: 15px; border-radius: 15px; max-width: 450px; margin: auto; }
+        .mecanismo-box { position: relative; height: 320px; margin: 20px 0; overflow: hidden; background: #eee4d3; border-radius: 10px; border: 1px solid #d2b48c; }
+        .rueda { position: absolute; border-radius: 50%; border: 4px solid #8b4513; background: #fff; transition: transform 3s cubic-bezier(0.4, 0, 0.2, 1); }
+        #r-num { width: 180px; height: 180px; left: -30px; top: 70px; z-index: 2; }
+        #r-sig { width: 340px; height: 340px; right: -100px; top: -10px; z-index: 1; }
+        .glifo-img { width: 45px; height: 45px; object-fit: contain; position: absolute; }
+        .num-item { position: absolute; font-weight: bold; font-size: 1.2rem; width: 30px; }
+        .puntero { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 65px; height: 65px; border: 4px solid #d35400; border-radius: 8px; z-index: 10; pointer-events: none; }
+        button { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 8px; width: 100%; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
+        .info-panel { display:none; margin-top:15px; text-align:left; background:white; padding:15px; border-radius:10px; border: 1px solid #e2d1b4; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2 style="color: #8b4513; margin: 0;">MECANISMO DEL TIEMPO</h2>
-    
+    <h2 style="margin-top:0;">MECANISMO DEL TIEMPO</h2>
     <div class="mecanismo-box">
         <div id="r-num" class="rueda"></div>
         <div id="r-sig" class="rueda"></div>
         <div class="puntero"></div>
     </div>
-
     <div id="controles">
-        <button onclick="activar()">Calcular Alineación de Hoy</button>
+        <button onclick="activar()">Calcular Alineación</button>
     </div>
-
-    <div id="detalle" style="display:none;" class="info-panel"></div>
+    <div id="detalle" class="info-panel"></div>
 </div>
+
+<audio id="sonidoPiedra" src="piedra.mp3" preload="auto"></audio>
 
 <script>
 const signos = ["Cipactli", "Ehecatl", "Calli", "Cuetzpalin", "Coatl", "Miquiztli", "Mazatl", "Tochtli", "Atl", "Itzcuintli", "Ozomatli", "Malinalli", "Acatl", "Ocelotl", "Cuauhtli", "Cozcacuauhtli", "Olin", "Tecpatl", "Quiahuitl", "Xochitl"];
-const iconos = ["🐊", "🌬️", "🏠", "🦎", "🐍", "💀", "🦌", "🐇", "💧", "🐕", "🐒", "🌿", "🏹", "🐆", "🦅", "🦉", "🌀", "🔪", "🌧️", "🌸"];
 
-// Dibujar contenido de las ruedas
 function dibujarRuedas() {
     const rNum = document.getElementById('r-num');
     const rSig = document.getElementById('r-sig');
-
-    // Números 1-13
     for(let i=0; i<13; i++) {
-        let angle = (i * (360/13)) * (Math.PI/180);
-        let x = 90 + 70 * Math.cos(angle) - 15;
-        let y = 90 + 70 * Math.sin(angle) - 15;
-        rNum.innerHTML += `<div class="item" style="left:${x}px; top:${y}px; transform: rotate(${i*(360/13)}deg)">${i+1}</div>`;
+        let ang = (i * (360/13)) * (Math.PI/180);
+        let x = 90 + 70 * Math.cos(ang) - 15;
+        let y = 90 + 70 * Math.sin(ang) - 15;
+        rNum.innerHTML += `<div class="num-item" style="left:${x}px; top:${y}px; transform: rotate(${i*(360/13)}deg)">${i+1}</div>`;
     }
-
-    // Signos 20
     for(let i=0; i<20; i++) {
-        let angle = (i * (360/20)) * (Math.PI/180);
-        let x = 160 + 130 * Math.cos(angle) - 15;
-        let y = 160 + 130 * Math.sin(angle) - 15;
-        rSig.innerHTML += `<div class="item" style="left:${x}px; top:${y}px; transform: rotate(${i*(360/20)}deg)">${iconos[i]}</div>`;
+        let ang = (i * (360/20)) * (Math.PI/180);
+        let x = 170 + 135 * Math.cos(ang) - 22;
+        let y = 170 + 135 * Math.sin(ang) - 22;
+        // Busca tus imágenes 1.jpg a 20.jpg
+        rSig.innerHTML += `<img src="${i+1}.jpg" class="glifo-img" style="left:${x}px; top:${y}px; transform: rotate(${i*(360/20)}deg)" alt="${signos[i]}">`;
     }
 }
 
 function activar() {
-    const hoy = new Date();
+    // Intentar reproducir sonido si existe
+    const audio = document.getElementById('sonidoPiedra');
+    audio.play().catch(e => console.log("Sonido esperando a ser configurado"));
+
+    const ahora = new Date();
+    // AJUSTE DE AMANECER: Restamos 6 horas (en milisegundos)
+    const hoyAjustado = new Date(ahora.getTime() - (6 * 60 * 60 * 1000));
+    
     const fechaRef = new Date('1521-08-23T00:00:00Z'); 
-    const difDias = Math.floor((hoy - fechaRef) / (1000 * 60 * 60 * 24));
+    const difDias = Math.floor((hoyAjustado - fechaRef) / (1000 * 60 * 60 * 24));
 
     let numTonal = ((difDias + 0) % 13) + 1; 
     let signoIdx = (difDias + 4) % 20;
     if (signoIdx < 0) signoIdx += 20;
 
-    // Girar: el ángulo central es 0 grados (derecha). 
-    // Ajustamos para que el signo quede en el punto de contacto central
-    let rotN = - (numTonal - 1) * (360 / 13);
-    let rotS = - (signoIdx) * (360 / 20) + 180; // +180 para que apunte al centro izquierdo
-
-    document.getElementById('r-num').style.transform = `rotate(${rotN}deg)`;
-    document.getElementById('r-sig').style.transform = `rotate(${rotS}deg)`;
+    // Animación de rotación
+    document.getElementById('r-num').style.transform = `rotate(${- (numTonal - 1) * (360 / 13)}deg)`;
+    document.getElementById('r-sig').style.transform = `rotate(${- (signoIdx) * (360 / 20) + 180}deg)`;
 
     setTimeout(() => {
-        mostrarDatos(numTonal, signoIdx, hoy);
+        const panel = document.getElementById('detalle');
+        panel.style.display = 'block';
+        panel.innerHTML = `
+            <div style="font-size:1.8rem; color:#d35400; font-weight:bold; text-align:center;">${numTonal} ${signos[signoIdx]}</div>
+            <p><strong>Año:</strong> 1 Tochtli</p>
+            <p><em>El cambio de signo se rige por la salida del Sol (06:00 AM).</em></p>
+            <button onclick="location.reload()" style="margin-top:10px; background:#d35400">Reiniciar</button>
+        `;
+        document.getElementById('controles').style.display = 'none';
     }, 3100);
-}
-
-function mostrarDatos(n, idx, hoy) {
-    const panel = document.getElementById('detalle');
-    panel.style.display = 'block';
-    
-    let añoActual = hoy.getFullYear();
-    let numAño = ((añoActual - 2026) % 13) + 1; 
-    if (numAño <= 0) numAño += 13;
-
-    panel.innerHTML = `
-        <div class="tonal-nombre">${n} ${signos[idx]}</div>
-        <p><strong>Año:</strong> ${numAño} Tochtli</p>
-        <p><em>"Los engranes se han alineado. Este es un día de ${signos[idx]}."</em></p>
-        <button onclick="location.reload()" style="margin-top:10px; background:#d35400">Reiniciar Cuenta</button>
-    `;
-    document.getElementById('controles').style.display = 'none';
 }
 
 dibujarRuedas();
