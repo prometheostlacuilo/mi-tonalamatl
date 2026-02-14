@@ -8,30 +8,31 @@
         body { font-family: 'Georgia', serif; text-align: center; background: #f4ece1; color: #3d2b1f; margin: 0; padding: 10px; }
         .card { background: #fffdfa; border: 2px dashed #8b4513; padding: 15px; border-radius: 15px; max-width: 450px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         
-        .mecanismo-box { position: relative; height: 320px; margin: 20px 0; overflow: hidden; background: #eee4d3; border-radius: 10px; border: 1px solid #d2b48c; }
+        /* Ajuste de contenedor para que los círculos no se encimen */
+        .mecanismo-box { position: relative; height: 320px; margin: 20px 0; overflow: hidden; background: #eee4d3; border-radius: 10px; border: 1px solid #d2b48c; display: flex; align-items: center; justify-content: center; }
+        
         .rueda { position: absolute; border-radius: 50%; border: 4px solid #8b4513; background: #fff; transition: transform 3s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        /* Rueda Numerales (Izquierda) */
-        #r-num { width: 180px; height: 180px; left: -30px; top: 70px; z-index: 2; }
-        /* Rueda Glifos (Derecha) */
-        #r-sig { width: 340px; height: 340px; right: -100px; top: -10px; z-index: 1; }
+        /* Rueda Numerales (Izquierda) - Ajustada para tocar el centro */
+        #r-num { width: 180px; height: 180px; left: calc(50% - 180px); z-index: 2; }
+        
+        /* Rueda Glifos (Derecha) - Ajustada para tocar el centro */
+        #r-sig { width: 340px; height: 340px; left: 50%; z-index: 1; }
 
         .glifo-img { width: 50px; height: 50px; object-fit: contain; position: absolute; }
         .num-item { position: absolute; font-weight: bold; font-size: 1.3rem; width: 30px; color: #8b4513; }
         
+        /* Puntero centrado exactamente en la unión */
         .puntero { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 70px; height: 70px; border: 4px solid #d35400; border-radius: 8px; z-index: 10; pointer-events: none; box-shadow: 0 0 10px rgba(211, 84, 0, 0.4); }
         
-        button { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 8px; width: 100%; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
-        button:active { background: #a04000; }
-        
-        .info-panel { display:none; margin-top:15px; text-align:left; background:white; padding:15px; border-radius:10px; border: 1px solid #e2d1b4; animation: fadeIn 1s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        button { background: #8b4513; color: white; border: none; padding: 15px; border-radius: 8px; width: 100%; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
+        .info-panel { display:none; margin-top:15px; text-align:left; background:white; padding:15px; border-radius:10px; border: 1px solid #e2d1b4; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2 style="margin: 0; color: #8b4513; letter-spacing: 1px;">MECANISMO DEL TIEMPO</h2>
+    <h2 style="margin: 0; color: #8b4513;">MECANISMO DEL TIEMPO</h2>
     
     <div class="mecanismo-box">
         <div id="r-num" class="rueda"></div>
@@ -40,7 +41,7 @@
     </div>
 
     <div id="controles">
-        <button onclick="activarMecanismo()">Consultar Alineación de Hoy</button>
+        <button onclick="activarMecanismo()">Consultar Alineación</button>
     </div>
 
     <div id="detalle" class="info-panel"></div>
@@ -55,7 +56,6 @@ function dibujarRuedas() {
     const rNum = document.getElementById('r-num');
     const rSig = document.getElementById('r-sig');
 
-    // Colocar Números 1-13
     for(let i=0; i<13; i++) {
         let ang = (i * (360/13)) * (Math.PI/180);
         let x = 90 + 65 * Math.cos(ang) - 15;
@@ -63,25 +63,21 @@ function dibujarRuedas() {
         rNum.innerHTML += `<div class="num-item" style="left:${x}px; top:${y}px; transform: rotate(${i*(360/13)}deg)">${i+1}</div>`;
     }
 
-    // Colocar TUS IMÁGENES PNG 1-20
     for(let i=0; i<20; i++) {
         let ang = (i * (360/20)) * (Math.PI/180);
+        // Ajuste de radio para que los glifos no choquen con el borde
         let x = 170 + 130 * Math.cos(ang) - 25;
         let y = 170 + 130 * Math.sin(ang) - 25;
-        // Cargando formato .png
-        rSig.innerHTML += `<img src="${i+1}.png" class="glifo-img" style="left:${x}px; top:${y}px; transform: rotate(${i*(360/20)}deg)" alt="${signos[i]}">`;
+        rSig.innerHTML += `<img src="${i+1}.png" class="glifo-img" style="left:${x}px; top:${y}px; transform: rotate(${i*(360/20)}deg)">`;
     }
 }
 
 function activarMecanismo() {
-    // Intentar sonido
     const audio = document.getElementById('sonidoPiedra');
-    audio.play().catch(() => console.log("Sonido piedra.mp3 no encontrado aún."));
+    audio.play().catch(() => {});
 
     const ahora = new Date();
-    // AJUSTE AMANECER (6:00 AM)
     const hoyAjustado = new Date(ahora.getTime() - (6 * 60 * 60 * 1000));
-    
     const fechaRef = new Date('1521-08-23T00:00:00Z'); 
     const difDias = Math.floor((hoyAjustado - fechaRef) / (1000 * 60 * 60 * 24));
 
@@ -89,7 +85,7 @@ function activarMecanismo() {
     let signoIdx = (difDias + 4) % 20;
     if (signoIdx < 0) signoIdx += 20;
 
-    // Calcular rotación para que queden frente a frente en el puntero
+    // Rotación: el punto de contacto es a 0 grados para la rueda izq y 180 para la der
     let rotN = - (numTonal - 1) * (360 / 13);
     let rotS = - (signoIdx) * (360 / 20) + 180; 
 
@@ -99,14 +95,7 @@ function activarMecanismo() {
     setTimeout(() => {
         const panel = document.getElementById('detalle');
         panel.style.display = 'block';
-        panel.innerHTML = `
-            <div style="font-size:2rem; color:#d35400; font-weight:bold; text-align:center; margin-bottom:10px;">
-                ${numTonal} ${signos[signoIdx]}
-            </div>
-            <p><strong>Año:</strong> 1 Tochtli</p>
-            <p style="font-style:italic; font-size:0.9rem;">"Los engranes se han alineado bajo la luz del sol."</p>
-            <button onclick="location.reload()" style="margin-top:10px; background:#d35400">Nueva Consulta</button>
-        `;
+        panel.innerHTML = `<div style="font-size:1.8rem; color:#d35400; font-weight:bold; text-align:center;">${numTonal} ${signos[signoIdx]}</div><p><strong>Año:</strong> 1 Tochtli</p><button onclick="location.reload()" style="margin-top:10px; background:#d35400">Reiniciar</button>`;
         document.getElementById('controles').style.display = 'none';
     }, 3100);
 }
